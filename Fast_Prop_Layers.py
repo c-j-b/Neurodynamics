@@ -57,7 +57,8 @@ def psth(spike_t, tbin):
 
     return freq, tvec
 
-##### SIMULATION #####
+# ----- SIMULATION ----- #
+
 
 start_scope()
 
@@ -89,10 +90,10 @@ run(1000*ms)
 
 freq, tvec = psth(Mspk.t, 5*ms)
 
-### PLOT NEURON VOLTAGES AND RASTER PLOT ###
+# PLOT NEURON VOLTAGES AND RASTER PLOT
 
-figure(1)
-subplot(8,1,1)
+figure(figsize=(8, 10))
+subplot(8, 1, 1)
 title('Layer 1 Neuron Voltages')
 plot(M.t/ms, M.v[0], label='Neuron 0')
 subplot(8, 1, 2)
@@ -111,33 +112,28 @@ subplot(8, 1, 8)
 plot(M.t/ms, M.v[7], label='Neuron 1')
 xlabel('Time (ms)')
 ylabel('v')
-show()
 
-#### RASTER PLOT ####
+# RASTER PLOT
 
 figure(2)
 title('Layer 1 Raster Plot')
 scatter(Mspk.t/ms, Mspk.i)
 ylim(-1, 20)
-show()
 
 
-#### VOLTAGE PLOT ####
+# VOLTAGE PLOT
 figure(3)
 title('Layer 1 Neuron Voltages Combined plot')
 plot(M.t/ms, M.v.T)
-show()
 
 figure(4)
 plot(back_current)
-show()
 
 figure(5)
 plot(input_stimulus)
-show()
 
-##### PLOT PSTH #####
-figure(6)
+# PLOT PSTH
+figure(6).subplots_adjust(hspace=.5)
 subplot(2, 1, 1)
 plot(divide(tvec, ms), freq)
 title('Layer 1 PSTH')
@@ -146,4 +142,8 @@ subplot(2, 1, 2)
 plot(np.multiply(input_stimulus, 1e12))
 title('Input Stimulus')
 xlim(-1000, 11000)
+
+
+
+# show all plots
 show()
