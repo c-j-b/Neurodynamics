@@ -1,13 +1,10 @@
-from brian2 import *
 from scipy import stats
+from brian2 import *
+
+prefs.codegen.target = 'numpy'  # needed to allow debugging with BRIAN2 and PyCharm
+
 
 defaultclock.dt = 0.01*ms
-
-# Define spatial neuron geometry
-morpho = Soma(diameter=20*um)   # spherical soma
-morpho.dendrites = Cylinder(length=1*um, diameter=1*um, n=10)   # 10 identical cylindrical dendrites
-
-morpho.topology()  # print topology?
 
 # Nernst Potentials
 E_Ca = 100*mV
@@ -42,11 +39,10 @@ F = 0.096485
 Mgcon = 1.4*nmolar
 Cacon_S = 100*nmolar  # check this unit
 Cacon_D = 100*nmolar  # check this unit
-r_s= 10
+r_s = 10
 
 alpha = 1/(z_Ca*F)
 
-#
 # Equations
 eqs_asu = '''
 # Transmembrane current for soma, vs = soma voltage
@@ -62,12 +58,12 @@ I_Ks_D = g_Ks_D * (E_Ks - Vd) : amp
 I_Na_D = g_Na_D * (E_Na - Vd) : amp
 I_CaL_D = g_CaL_D * (E_CaL - Vd) : amp
 I_K_D = g_K_D * (E_K - Vd) : amp
-I_KCa_D = g_KCa_D*(E_K - Vd) : amp  ####### redo...?
+I_KCa_D = g_KCa_D*(E_K - Vd) : amp 
 I_L_D = g_L*(E_L - Vd) : amp
 I_couple_D = g_c*((r_s**2)*r_d/(l_d*(l_d*r_d**2 + l_s*r_s**2))*(Vs-Vd)) : amp
 I_NMDA_D = g_NMDA * (E_NMDA - Vd) : amp
 
-dV_s/dt = (I_app + I_Ks_S + I_Na_S + I_CaL_S + I_K_S + I_KCa_S +I_L_S + I_couple_S)/C : amp/meter**2
+Im = (I_app + I_Ks_S + I_Na_S + I_CaL_S + I_K_S + I_KCa_S +I_L_S + I_couple_S)/C : amp/meter**2
 dV_d/dt = (I_Ks_D + I_Na_D + I_CaL_D + I_K_D + I_KCa_D +I_L_D + I_NMDA_D + I_couple_D)/C : amp/meter**2
 
 I : amp (point current) # applied current
@@ -84,20 +80,20 @@ beta_n = 0.56*exp(-(v+20)/5.8) : Hz
 alpha_c  = -0.0032*(v+50)/(exp(-(v+50)/5) - 1) : Hz
 beta_c  = 0.05*exp(-(v+55)/40) : Hz
 # Conductances
-g_KCa_S = g_bar_KCa * (Cacon_S*Cacon_S*Cacon_S*Cacon_S)/(Cacon_S*Cacon_S*Cacon_S*Cacon_S+KCa*KCa*KCa*KCa)
-g_K_S = g_bar_K*1/(1+exp(-(Vs-V_HK)/V_SK))
-g_CaL_S = g_bar_CaL * (alpha_c_S/(alpha_c_S+beta_c_S)) * (alpha_c_S/(alpha_c_S+beta_c_S))*(alpha_c_S/(alpha_c_S+beta_c_S))*(alpha_c_S/(alpha_c_S+beta_c_S))
-g_Na_S = g_bar_Na*m_inf_S*m_inf_S*m_inf_S*h_S
-g_Ks_S = g_bar_Ks * n_S*n_S*n_S*n_S
-g_KCa_D = g_bar_KCa * (Cacon_D*Cacon_D*Cacon_D*Cacon_D)/(Cacon_D*Cacon_D*Cacon_D*Cacon_D+KCa*KCa*KCa*KCa)
-g_K_D = g_bar_K*1/(1+exp(-(Vd-V_HK)/V_SK))
-g_CaL_D = g_bar_CaL * (alpha_c_D/(alpha_c_D+beta_c_D)) * (alpha_c_D/(alpha_c_D+beta_c_D))*(alpha_c_D/(alpha_c_D+beta_c_D))*(alpha_c_D/(alpha_c_D+beta_c_D))
-g_Na_D = g_bar_Na*m_inf_D*m_inf_D*m_inf_D*h_D
-g_Ks_D = g_bar_Ks * n_D*n_D*n_D*n_D
-g_NMDA = g_bar_NMDA*(1/(1+(Mgcon/10)*exp(Vd/12.5)))
-# Misc.
-m_inf = alpha_m/(alpha_m+beta_m)
-dCacon_S/dt = 2*beta*(alpha*I_CaL_S - P_Ca*Cacon_S)/r_s
+g_KCa_S = g_bar_KCa * (Cacon_S**4)/(Cacon_S**4 + KCa**4) : siemens/meter**2
+g_K_S = g_bar_K*1/(1+exp(-(Vs-V_HK)/V_SK)) :  siemens/meter**2
+g_CaL_S = g_bar_CaL * (alpha_c_S/(alpha_c_S+beta_c_S))**4 : siemens/meter**2
+g_Na_S = g_bar_Na*m_inf_S*m_inf_S*m_inf_S*h_S : siemens/meter**2
+g_Ks_S = g_bar_Ks * n_S*n_S*n_S*n_S : siemens/meter**2
+g_KCa_D = g_bar_KCa * (Cacon_D*Cacon_D*Cacon_D*Cacon_D)/(Cacon_D*Cacon_D*Cacon_D*Cacon_D+KCa*KCa*KCa*KCa) : siemens/meter**2
+g_K_D = g_bar_K*1/(1+exp(-(Vd-V_HK)/V_SK)) : siemens/meter**2
+g_CaL_D = g_bar_CaL * (alpha_c_D/(alpha_c_D+beta_c_D)) * (alpha_c_D/(alpha_c_D+beta_c_D))*(alpha_c_D/(alpha_c_D+beta_c_D))*(alpha_c_D/(alpha_c_D+beta_c_D)) : siemens/meter**2
+g_Na_D = g_bar_Na*m_inf_D*m_inf_D*m_inf_D*h_D : siemens/meter**2
+g_Ks_D = g_bar_Ks * n_D*n_D*n_D*n_D : siemens/meter**2
+g_NMDA = g_bar_NMDA*(1/(1+(Mgcon/10)*exp(Vd/12.5))) : siemens/meter**2
+# Misc
+m_inf = alpha_m/(alpha_m+beta_m) : 1
+dCacon_S/dt = 2*beta*(alpha*I_CaL_S - P_Ca*Cacon_S)/r_s : 1
 '''
 
 
@@ -120,35 +116,40 @@ betan = 0.125*exp(-v/(80*mV))/ms : Hz
 gNa : siemens/meter**2
 '''
 
-neuron = SpatialNeuron(morphology=morpho, model=eqs_asu, method="exponential_euler",
-                       refractory="m > 0.4", threshold="m > 0.5",
-                       Cm=1*uF/cm**2, Ri=35.4*ohm*cm)
-neuron.v = 0*mV
-neuron.h = 1
-neuron.m = 0
-neuron.n = .5
-neuron.I = 0*amp
-neuron.gNa = gNa
-M = StateMonitor(neuron, 'v', record=True)
-spikes = SpikeMonitor(neuron)
+if "__main__" == __name__:
+    # Define spatial neuron geometry
+    morpho = Soma(diameter=20 * um)  # spherical soma
+    morpho.dendrites = Cylinder(length=1 * um, diameter=1 * um, n=10)  # 10 identical cylindrical dendrites
 
-run(50*ms, report='text')
-neuron.I[0] = 1*uA  # current injection at one end
-run(3*ms)
-neuron.I = 0*amp
-run(50*ms, report='text')
+    # morpho.topology()  # print topology?
+    neuron = SpatialNeuron(morphology=morpho, model=eqs_asu, method="exponential_euler", refractory="m > 0.4",
+                           threshold="m > 0.5", Cm=1*uF/cm**2, Ri=35.4*ohm*cm)
+    neuron.v = 0*mV
+    neuron.h = 1
+    neuron.m = 0
+    neuron.n = .5
+    neuron.I = 0*amp
+    neuron.gNa = gNa
+    M = StateMonitor(neuron, 'v', record=True)
+    spikes = SpikeMonitor(neuron)
 
-# Calculation of velocity
-slope, intercept, r_value, p_value, std_err = stats.linregress(spikes.t/second, neuron.distance[spikes.i]/meter)
-print("Velocity = %.2f m/s" % slope)
+    run(50*ms, report='text')
+    neuron.I[0] = 1*uA  # current injection at one end
+    run(3*ms)
+    neuron.I = 0*amp
+    run(50*ms, report='text')
 
-subplot(211)
-for i in range(10):
-    plot(M.t/ms, M.v.T[:, i*100]/mV)
-ylabel('v')
-subplot(212)
-plot(spikes.t/ms, spikes.i*neuron.length[0]/cm, '.k')
-plot(spikes.t/ms, (intercept+slope*(spikes.t/second))/cm, 'r')
-xlabel('Time (ms)')
-ylabel('Position (cm)')
-show()
+    # Calculation of velocity
+    slope, intercept, r_value, p_value, std_err = stats.linregress(spikes.t/second, neuron.distance[spikes.i]/meter)
+    print("Velocity = %.2f m/s" % slope)
+
+    subplot(211)
+    for i in range(10):
+        plot(M.t/ms, M.v.T[:, i*100]/mV)
+    ylabel('v')
+    subplot(212)
+    plot(spikes.t/ms, spikes.i*neuron.length[0]/cm, '.k')
+    plot(spikes.t/ms, (intercept+slope*(spikes.t/second))/cm, 'r')
+    xlabel('Time (ms)')
+    ylabel('Position (cm)')
+    show()
