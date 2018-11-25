@@ -1,5 +1,3 @@
-# import sys
-# sys.path.append("/home/hines/lib64/python")
 from neuron import h, gui
 import pickle
 from matplotlib import pyplot

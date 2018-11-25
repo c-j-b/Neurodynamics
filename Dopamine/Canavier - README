@@ -1,0 +1,107 @@
+Simulations that illustrate the firing pattern of a simulated dopamine
+neuron in vitro and in vivo. These simulations are related to the
+following paper:
+
+Canavier C.C. and Landry R.S. (2006) An increase in AMPA and a
+decrease in SK conductance increase burst firing by different
+mechanisms in a model of a dopamine neuron in vivo. J Neurophysiol
+96(5):2549-63.
+
+  
+Example In Vivo Simulations 
+
+------------------------------------- 
+
+In these simulations, the file Receptor.cpp generates a random set of
+Poisson-distributed events, and convolves the resultant pulse train
+with the explicit solution to a differential equation that is a rising
+exponential for the one ms that transmitter is postulated to reside in
+the synaptic cleft, and a falling exponential thereafter. The
+resultant .dat files are provided with each simulation. For example,
+the files fig4bAMPA.dat and fig4bNMDA.dat drive the AMPA conductance
+and NMDA permeability respectively for Fig.4B.
+
+Note that the compiled mechanisms are different for nmda and ampa than
+in the in vitro case because they are no longer constant, but rather
+driven by the input files described above. You can run the simulation
+either by auto-launching from ModelDB, or by first compiling the
+mechanisms as follows:
+
+Under linux: ---
+
+nrnivmodl
+
+Then type 
+
+nrngui mosinit.hoc
+
+Under Windows: ---
+
+Run mknrndll twice to compile the mod files in the top level directory
+and then in the in_vitro directory.  Then double click on the
+mosinit.hoc file to start the in vivo simulations or on the fig4a.hoc
+to start the in vitro simulations.
+
+Under MAC - OS X: ---
+
+Drag and drop the archive file on the mknrndll icon (in the NEURON
+application folder).  Drag and drop the mosinit.hoc file onto the
+nrngui icon.
+
+---
+Now that you have started the model on your platform:
+Select a figure from the buttons and then press Init & Run.
+
+Alternatively, if desired you can run the figures directly by running
+commands under linux (with your path set appropriately):
+
+special fig4b1.hoc - 
+
+Once the menu and graphics interface has appeared, click on the "Init
+and run" button to start the simulation.
+
+Follow the same instructions for the rest of the in vivo files:
+fig4b2.hoc, fig4b3.hoc, fig5a.hoc, fig5b.hoc, fig9a1.hoc - fig9a3.hoc,
+fig9b1.hoc - fig9b3, fig10a.hoc - fig10c.hoc, fig11b1.hoc, and
+fig11b2.hoc.
+
+Note: two flags in the hoc files may be useful to the experienced
+user.  restart = 1 restarts from the initial conditions, whereas
+restart = 0 does not, back = 0 uses the GUI, whereas back = 1 sends
+the output to stdout.
+
+
+Example In Vitro Simulation
+
+------------------------------------- 
+
+These files simulates the bath application of glutamate in a slice
+preparation such that the synaptic conductances reflect a constant,
+average level of activation
+
+You can run the simulation by first compiling the mechanisms as
+follows:
+
+In linux: ---
+
+cd in_vitro
+nrnivmodl
+nrngui fig4a.hoc
+
+In windows: ---
+
+Use mknrndll, change to the in_vitro, and make the nrnmech.dll there.
+Double click the fig4a.hoc file.
+
+In MAC - OS X: ---
+
+Drag and drop the in_vitro folder onto the mknrndll icon in the NEURON
+application folder.  Drag and drop the fig4a.hoc file onto the nrngui
+icon.
+
+---
+Now that the in vitro model is running:
+
+Select a figure from the radio buttons.  Once the menu and graphics
+interface has appeared, click on the "Init and run" button to start
+the simulation.

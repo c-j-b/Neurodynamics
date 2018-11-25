@@ -1,0 +1,31 @@
+load_file("nrngui.hoc")
+
+strdef tstr
+
+xpanel("In vivo figures")
+xlabel("To reproduce any of the below figures select a")
+xlabel("button and then press Init & Run")
+xradiobutton("4b1 - Control", "restart_(\"fig4b1\")")
+xradiobutton("4b2 - 2xgAMPA", "restart_(\"fig4b2\")")
+xradiobutton("4b3 - SK Block", "restart_(\"fig4b3\")")
+xradiobutton("4b4 - PD Control", "restart_(\"fig4b4\")")
+xradiobutton("4b5 - PD 2xgAMPA", "restart_(\"fig4b5\")")
+xradiobutton("4b4 - PD SK Block", "restart_(\"fig4b6\")")
+
+xbutton("Exit","quit()")
+xlabel("Note: to reproduce in vitro figures exit")
+xlabel("cd to and recompile the mod files in in_vitro folder")
+xlabel("and then startup init_invitro.hoc, e.g. in linux/mac type:")
+xlabel("nrngui init_invitro.hoc")
+xpanel(5,100)
+
+pwmcnt = PWManager[0].count // the initial gui should not be dismissed
+
+proc restart_() {local i
+	for (i= PWManager[0].count-1; i >= pwmcnt; i -= 1) {
+		PWManager[0].close(i)
+		doNotify()
+	}
+	sprint(tstr, "%s.hoc", $s1)
+	load_file(1, tstr)
+}
