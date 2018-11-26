@@ -11,7 +11,7 @@ typedef struct {
 	float X3;
 }*UserData;
 
-main()
+int main()
 {
 	FILE *rp, *ap, *gaba_eventp, *glu_eventp;
 	srand(time(NULL));
@@ -20,11 +20,11 @@ main()
 	double t = 0.0, endtime = 90000.0, scale = 0.1;
 	double cut = 1000.0;
 	double duration;
-double a,b,c;
+	double a,b,c;
 	int check2;
 	float glu_stimtime;
 	
-	meanIEI = 2.2237;
+	meanIEI = 4.2237; //2.2237;
 	alpha1 = 1.1;
 	beta1 = 0.19;
 	alpha2 = 0.072;
@@ -38,14 +38,14 @@ double a,b,c;
 	UserData data;
 	data = (UserData)malloc(sizeof *data);
 	
-	
-	
-	glu_eventp = fopen("glu_event.data","w");
+	printf("Init complete\n\r");
+	glu_eventp = fopen("PD_glu_event.data","w");
 	glu_stimtime = 0;
+	printf("starting loop 1\r\n");
 	do
 	{ 
-               a = rand();
-               a=1.0*a;
+        a = rand();
+        a=1.0*a;
 		b=1.0*(1.0*RAND_MAX+1.0);
 		c = -meanIEI*log(a/b);
 		glu_stimtime = glu_stimtime + c;
@@ -53,22 +53,23 @@ double a,b,c;
 		
 	}
 	while(glu_stimtime < endtime);
+	printf("Loop 1 finished\r\n");
 	fclose(glu_eventp);
 	
 	
-	rp = fopen("AMPA.data", "w");
-	ap = fopen("NMDA.data", "w");
-	
+	rp = fopen("PD_AMPA.data", "w");
+	ap = fopen("PD_NMDA.data", "w");
+	printf("Starting data generation\n");
 	while(t < endtime)
 	{
+		printf("t:%f \n", t);
 		t += scale;
 		data->X1 = 0.0;
 		data->X2 = 0.0;
 		data->X3 = 0.0;
-		glu_eventp = fopen("glu_event.data","r");
+		glu_eventp = fopen("PD_glu_event.data","r");
 		rewind(glu_eventp);
 		check2 = fscanf(glu_eventp, "%f\n", &glu_stimtime);
-		
 		while(check2 != EOF)
 		{
 			if(t - glu_stimtime > 0 && t - glu_stimtime <= duration)
@@ -100,7 +101,7 @@ double a,b,c;
 	}
 	fclose(rp);
 	fclose(ap);
-
+	printf("Done!\n");
 	return(0);
 }
 
